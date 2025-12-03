@@ -1,4 +1,4 @@
-K-Verse – Kpop Wallpaper & Widget Customization App (Android Only)
+# k_verse
 
 K-Verse is a mobile application designed for K-pop fans who want to fully personalize their device with custom wallpapers, widgets, and visual themes inspired by their favorite idols and groups. The app provides a creative environment where users can design unique layouts, organize their screen aesthetics, and express their fandom in a highly customizable way.
 
