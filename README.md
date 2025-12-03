@@ -1,16 +1,43 @@
-# k_verse
+K-Verse – Kpop Wallpaper & Widget Customization App (Android Only)
 
-A new Flutter project.
+K-Verse is a mobile application designed for K-pop fans who want to fully personalize their device with custom wallpapers, widgets, and visual themes inspired by their favorite idols and groups. The app provides a creative environment where users can design unique layouts, organize their screen aesthetics, and express their fandom in a highly customizable way.
 
-## Getting Started
+Built using Flutter (Dart), K_Verse delivers a smooth interface, flexible UI editing tools, and a responsive design experience.
+This project is currently developed exclusively for Android users.
 
-This project is a starting point for a Flutter application.
+✨ Features
 
-A few resources to get you started if this is your first Flutter project:
+- 🎨 Wallpaper Creator
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Import photos from your gallery
+Add text, stickers, colors, and overlays
+Customize layouts through an interactive editor
+Export high-resolution wallpapers directly to your device
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- 📱 Widget Creator
+
+Create personalized home-screen widgets
+Support for image-based widgets using the app_widget plugin
+Add custom text, photos, countdowns, and more
+Update widget designs from inside the app
+
+🛠️ Tech Stack
+
+- Dart & Flutter
+- Firebase
+
+📌 Platform Support
+
+K-Verse is currently optimized and built solely for Android due to platform-specific widget handling and initial development focus
+
+📄 Project Goals
+
+- Provide an intuitive creative tool for K-pop fans
+- Support full device personalization through wallpapers + widgets
+- Build a scalable architecture for future additions (packs, themes, analytics, cloud sync, etc.)
+- Maintain clean, modular Flutter code for open-source collaboration
+
+📬 Feedback & Contact
+
+K_Verse uses a structured feedback system to evaluate usability and user experience during development.
+For inquiries or feedback: 📧 kentcwk26@gmail.com
