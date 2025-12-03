@@ -1,25 +1,25 @@
-# k_verse
+# K-Verse
 
 K-Verse is a mobile application designed for K-pop fans who want to fully personalize their device with custom wallpapers, widgets, and visual themes inspired by their favorite idols and groups. The app provides a creative environment where users can design unique layouts, organize their screen aesthetics, and express their fandom in a highly customizable way.
 
-Built using Flutter (Dart), K_Verse delivers a smooth interface, flexible UI editing tools, and a responsive design experience.
+Built using Flutter (Dart), K-Verse delivers a smooth interface, flexible UI editing tools, and a responsive design experience.
 This project is currently developed exclusively for Android users.
 
 ✨ Features
 
-- 🎨 Wallpaper Creator
+1. 🎨 Wallpaper Creator
 
-Import photos from your gallery
-Add text, stickers, colors, and overlays
-Customize layouts through an interactive editor
-Export high-resolution wallpapers directly to your device
+- Import photos from your gallery
+- Add text, stickers, colors, and overlays
+- Customize layouts through an interactive editor
+- Export high-resolution wallpapers directly to your device
 
-- 📱 Widget Creator
+2. 📱 Widget Creator
 
-Create personalized home-screen widgets
-Support for image-based widgets using the app_widget plugin
-Add custom text, photos, countdowns, and more
-Update widget designs from inside the app
+- Create personalized home-screen widgets
+- Support for image-based widgets using the app_widget plugin
+- Add custom text, photos, countdowns, and more
+- Update widget designs from inside the app
 
 🛠️ Tech Stack
 
