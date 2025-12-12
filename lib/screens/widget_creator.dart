@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
@@ -116,23 +117,20 @@ class _WidgetCreatorState extends State<WidgetCreator> {
 
   Future<void> _saveWidget() async {
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Please enter widget name')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Please enter widget name')));
       return;
     }
 
     if (_selectedType == "quote" && _quoteController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Enter quote text')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Enter quote text')));
       return;
     }
 
     if (_selectedType == "countdown" && _countdownDateController.text.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Enter countdown date')));
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('Enter countdown date')));
       return;
     }
 
@@ -152,6 +150,20 @@ class _WidgetCreatorState extends State<WidgetCreator> {
     );
 
     await _firebaseService.saveWidget(widgetModel);
+
+    final wid = widgetModel.id;
+
+    await HomeWidget.saveWidgetData<String>('name_$wid', widgetModel.name);
+    await HomeWidget.saveWidgetData<String>('type_$wid', widgetModel.type);
+    await HomeWidget.saveWidgetData<String>('text_$wid', widgetModel.data['text'] ?? "");
+    await HomeWidget.saveWidgetData<String>('countdownDate_$wid', widgetModel.data['countdownDate'] ?? "");
+    await HomeWidget.saveWidgetData<String>('bgColor_$wid', widgetModel.style['backgroundColor']);
+    await HomeWidget.saveWidgetData<String>('image_$wid', widgetModel.style['backgroundImage']);
+
+    await HomeWidget.updateWidget(
+      name: 'UserHomeClockWidgetProvider',
+      iOSName: null,
+    );
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Widget created successfully!')),
@@ -476,10 +488,25 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
 
     await _firebase.saveWidget(updated);
 
+    final wid = updated.id;
+
+    await HomeWidget.saveWidgetData<String>('name_$wid', updated.name);
+    await HomeWidget.saveWidgetData<String>('type_$wid', updated.type);
+    await HomeWidget.saveWidgetData<String>('text_$wid', updated.data['text'] ?? "");
+    await HomeWidget.saveWidgetData<String>('countdownDate_$wid', updated.data['countdownDate'] ?? "");
+    await HomeWidget.saveWidgetData<String>('bgColor_$wid', updated.style['backgroundColor']);
+    await HomeWidget.saveWidgetData<String>('image_$wid', updated.style['backgroundImage']);
+
+    await HomeWidget.updateWidget(
+      name: 'UserHomeClockWidgetProvider',
+      iOSName: null,
+    );
+
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Widget updated")));
 
     Navigator.pop(context);
   }
+
 
   Widget _buildPreview() {
     final bgColor = Color(int.parse(_style['backgroundColor'].substring(1), radix: 16) + 0xFF000000);
@@ -523,11 +550,9 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
   Widget _buildPreviewRight(Color color) {
     switch (_selectedType) {
       case 'clock':
-        return Text(DateFormat('hh:mm:ss a').format(_now),
-            style: TextStyle(fontSize: 16, color: color, fontWeight: FontWeight.bold));
+        return Text(DateFormat('hh:mm:ss a').format(_now), style: TextStyle(fontSize: 16, color: color, fontWeight: FontWeight.bold));
       case 'quote':
-        return Text(_quoteController.text.isNotEmpty ? _quoteController.text : "Your Quote...",
-            style: TextStyle(color: color, fontSize: 16));
+        return Text(_quoteController.text.isNotEmpty ? _quoteController.text : "Your Quote...", style: TextStyle(color: color, fontSize: 16));
       case 'countdown':
         return Text(
             _countdownController.text.isEmpty

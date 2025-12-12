@@ -6,7 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart' as provider;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
-
 import 'models/user.dart';
 import 'repositories/announcement_repository.dart';
 import 'screens/adminstrators/adminstrator.dart';

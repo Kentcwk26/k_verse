@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/clock_widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <ImageView
+        android:id="@+id/clock_bg_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/clock_center_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center">
+
+        <TextView
+            android:id="@+id/clock_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monday, Feb 10"
+            android:textColor="@android:color/white"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:paddingBottom="4dp" />
+
+        <TextView
+            android:id="@+id/clock_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="12:00:00 PM"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="26sp" />
+
+    </LinearLayout>
+
+</RelativeLayout>

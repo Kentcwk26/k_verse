@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import '../models/wallpaper_model.dart';
 import '../models/widget_model.dart';
@@ -28,6 +31,44 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
     _getCurrentUserAndLoadCreations();
+  }
+
+  void sendWidgetToHomeScreen(KWidget widget) async {
+    final widgetId = widget.id;
+
+    await HomeWidget.saveWidgetData("name_$widgetId", widget.name);
+    await HomeWidget.saveWidgetData("type_$widgetId", widget.type);
+    await HomeWidget.saveWidgetData("text_$widgetId", widget.data["text"] ?? "");
+    await HomeWidget.saveWidgetData("countdownDate_$widgetId", widget.data["countdownDate"] ?? "");
+    await HomeWidget.saveWidgetData("bgColor_$widgetId", widget.style["backgroundColor"]);
+    await HomeWidget.saveWidgetData("image_$widgetId", widget.style["backgroundImage"]);
+
+    await HomeWidget.updateWidget(
+      name: 'UserHomeClockWidgetProvider',
+      iOSName: 'UserHomeClockWidgetProvider',
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text("Widget exported to Home Screen!")),
+    );
+  }
+
+  void sendWallpaperToHomeScreen(KWallpaper wallpaper) async {
+    await HomeWidget.saveWidgetData(
+      'wallpaper_image_${wallpaper.id}',
+      wallpaper.backgroundImage,
+    );
+
+    await HomeWidget.updateWidget(
+      name: 'KVerseWidgetProvider',
+      iOSName: null,
+    );
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Wallpaper exported to Home Screen!')),
+    );
   }
 
   void _getCurrentUserAndLoadCreations() async {
@@ -83,7 +124,6 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
 
   void _deleteWallpaper(String id) async {
     try {
-      // First remove from Firestore
       await _firebaseService.deleteWallpaper(id);
       
       setState(() {
@@ -159,51 +199,73 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
   }
 
   Widget _buildWallpaperCard(KWallpaper wallpaper) {
-    return Card(
-      elevation: 4,
-      child: Stack(
-        children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(4)),
-                  child: Image.network(
-                    wallpaper.backgroundImage,
-                    fit: BoxFit.cover,
-                    loadingBuilder: (context, child, loadingProgress) {
-                      if (loadingProgress == null) return child;
-                      return Center(
-                        child: CircularProgressIndicator(
-                          value: loadingProgress.expectedTotalBytes != null
-                              ? loadingProgress.cumulativeBytesLoaded / (loadingProgress.expectedTotalBytes ?? 1)
-                              : null,
-                        ),
-                      );
-                    },
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        color: Colors.grey[200],
-                        child: Icon(Icons.broken_image, color: Colors.grey),
-                      );
-                    },
+    return GestureDetector(
+      onTap: () => sendWallpaperToHomeScreen(wallpaper),
+      child: Card(
+        elevation: 4,
+        child: Stack(
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    child: Image.network(
+                      wallpaper.backgroundImage,
+                      fit: BoxFit.cover,
+                      loadingBuilder: (context, child, loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: CircularProgressIndicator(
+                            value: loadingProgress.expectedTotalBytes != null
+                                ? loadingProgress.cumulativeBytesLoaded /
+                                    (loadingProgress.expectedTotalBytes ?? 1)
+                                : null,
+                          ),
+                        );
+                      },
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          color: Colors.grey[200],
+                          child: const Icon(Icons.broken_image, color: Colors.grey),
+                        );
+                      },
+                    ),
                   ),
                 ),
-              )
-            ],
-          ),
-          Positioned(
-            top: 1,
-            right: 1,
-            child: Container(
+              ],
+            ),
+
+            // DELETE BUTTON (still works)
+            Positioned(
+              top: 4,
+              right: 4,
               child: IconButton(
-                icon: Icon(Icons.delete, size: 18, color: Colors.red),
+                icon: const Icon(Icons.delete, size: 18, color: Colors.red),
                 onPressed: () => _deleteWallpaper(wallpaper.id),
               ),
             ),
-          ),
-        ],
+
+            // EXPORT ICON OVERLAY (visual hint)
+            Positioned(
+              bottom: 6,
+              right: 6,
+              child: Container(
+                padding: const EdgeInsets.all(6),
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.6),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.phone_android,
+                  color: Colors.white,
+                  size: 18,
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -274,7 +336,6 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
       ),
       child: Row(
         children: [
-          // LEFT IMAGE PREVIEW
           ClipRRect(
             borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(14),
@@ -296,7 +357,6 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
 
           const SizedBox(width: 12),
 
-          // RIGHT CONTENT
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -346,6 +406,11 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
                 ),
               ).then((_) => _loadCreations());
             },
+          ),
+
+          IconButton(
+            icon: Icon(Icons.phone_android, color: Colors.black),
+            onPressed: () => sendWidgetToHomeScreen(widget),
           ),
 
           IconButton(

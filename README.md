@@ -36,5 +36,5 @@ K-Verse is currently optimized and built solely for Android due to platform-spec
 
 📬 Feedback & Contact
 
-K_Verse uses a structured feedback system to evaluate usability and user experience during development.
+K-Verse uses a structured feedback system to evaluate usability and user experience during development.
 For any inquiries or feedback please email me : 📧 kentcwk26@gmail.com

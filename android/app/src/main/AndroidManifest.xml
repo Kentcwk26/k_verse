@@ -3,7 +3,9 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
 
     <queries>
         <intent>
@@ -28,6 +30,7 @@
         android:label="k_verse"
         android:icon="@mipmap/ic_launcher">
 
+        <!-- Main Flutter Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -50,12 +53,12 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+
         </activity>
 
         <activity
             android:name="io.flutter.embedding.android.FlutterActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true" />
 
         <activity
             android:name=".SelectWidgetWallpaperActivity"
@@ -65,13 +68,18 @@
         <activity
             android:name=".WidgetConfigActivity"
             android:exported="true">
-            
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
             </intent-filter>
-
         </activity>
 
+        <!-- Foreground service for 1-second clock updates -->
+        <service
+            android:name=".ClockUpdateService"
+            android:foregroundServiceType="dataSync"
+            android:exported="false" />
+
+        <!-- Wallpaper widget -->
         <receiver
             android:name=".KVerseWidgetProvider"
             android:label="K-Verse Wallpaper"
@@ -85,6 +93,21 @@
             <meta-data
                 android:name="android.appwidget.provider"
                 android:resource="@xml/kverse_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name=".UserHomeClockWidgetProvider"
+            android:label="K-Verse Clock Widget"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="CLOCK_WIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/user_clock_widget_info" />
         </receiver>
 
         <meta-data
