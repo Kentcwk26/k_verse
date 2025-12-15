@@ -1,12 +1,14 @@
-import 'dart:convert';
-
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:provider/provider.dart';
 import '../models/wallpaper_model.dart';
 import '../models/widget_model.dart';
 import '../services/firebase_service.dart';
 import '../utils/date_formatter.dart';
+import '../utils/snackbar_helper.dart';
 import '../viewmodels/user_viewmodel.dart';
 import 'widget_creator.dart';
 
@@ -33,6 +35,36 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
     _getCurrentUserAndLoadCreations();
   }
 
+  Future<String?> _downloadImage(String url) async {
+    try {
+      final request = await HttpClient().getUrl(Uri.parse(url));
+      final response = await request.close();
+
+      final bytes = <int>[];
+      await for (final chunk in response) {
+        bytes.addAll(chunk);
+      }
+
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File(
+        '${dir.path}/wallpaper_${DateTime.now().millisecondsSinceEpoch}.png',
+      );
+
+      await file.writeAsBytes(bytes);
+      return file.path;
+    } catch (e) {
+      debugPrint('Download failed: $e');
+      return null;
+    }
+  }
+
+  Future<List<int>> getWidgetIds() async {
+    const channel = MethodChannel('kverse/widget');
+    final result = await channel.invokeMethod<List<dynamic>>('getWidgets');
+
+    return result?.map((e) => e as int).toList() ?? [];
+  }
+
   void sendWidgetToHomeScreen(KWidget widget) async {
     final widgetId = widget.id;
 
@@ -54,21 +86,63 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
     );
   }
 
-  void sendWallpaperToHomeScreen(KWallpaper wallpaper) async {
+  Future<void> exportQuoteWidget(
+    BuildContext context,
+    KWidget widget,
+  ) async {
     await HomeWidget.saveWidgetData(
-      'wallpaper_image_${wallpaper.id}',
-      wallpaper.backgroundImage,
+      "quote_text",
+      widget.data['text'] ?? '',
+    );
+
+    await HomeWidget.saveWidgetData(
+      "quote_bg",
+      widget.style['backgroundColor'] ?? '#303030',
+    );
+
+    await HomeWidget.saveWidgetData(
+      "quote_image",
+      widget.style['backgroundImage'],
     );
 
     await HomeWidget.updateWidget(
-      name: 'KVerseWidgetProvider',
+      name: 'UserHomeQuoteWidgetProvider',
       iOSName: null,
     );
 
-    if (!mounted) return;
+    if (!context.mounted) return;
+
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Wallpaper exported to Home Screen!')),
+      const SnackBar(content: Text("Quote exported to Home Screen")),
     );
+  }
+
+  Future<void> sendWallpaperToHomeScreen(KWallpaper wallpaper) async {
+    final path = await _downloadImage(wallpaper.backgroundImage);
+    if (path == null) {
+      if (!mounted) return;
+      SnackBarHelper.showError(context, "Failed to download image");
+      return;
+    }
+
+    final widgetIds = await getWidgetIds();
+    if (widgetIds.isEmpty) {
+      if (!mounted) return;
+      SnackBarHelper.showError(context, "No widgets found. Add widget first.");
+      return;
+    }
+
+    final widgetId = widgetIds.last;
+
+    final channel = const MethodChannel('kverse/widget');
+    await channel.invokeMethod('updateWidget', {
+      'widgetId': widgetId,
+      'image': path,
+      'wallpaperId': wallpaper.id,
+    });
+
+    if (!mounted) return;
+    SnackBarHelper.showSuccess(context, "Wallpaper exported to widget!");
   }
 
   void _getCurrentUserAndLoadCreations() async {
@@ -409,8 +483,14 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
           ),
 
           IconButton(
-            icon: Icon(Icons.phone_android, color: Colors.black),
-            onPressed: () => sendWidgetToHomeScreen(widget),
+            icon: const Icon(Icons.phone_android),
+            onPressed: () {
+              if (widget.type == 'quote') {
+                exportQuoteWidget(context, widget);
+              } else {
+                sendWidgetToHomeScreen(widget);
+              }
+            },
           ),
 
           IconButton(

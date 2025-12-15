@@ -110,6 +110,19 @@
                 android:resource="@xml/user_clock_widget_info" />
         </receiver>
 
+        <receiver
+            android:name=".UserHomeQuoteWidgetProvider"
+            android:label="K-Verse Quote Widget"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/user_quote_widget_info" />
+        </receiver>
+
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
