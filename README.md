@@ -1,7 +1,7 @@
-# K-Verse
+# K-Hub
 
-K-Verse is a mobile application designed for Kpop fans who want to fully personalize their device with custom wallpapers, widgets, and visual themes inspired by their favorite idols and groups. The app provides a creative environment where users can design unique layouts, organize their screen aesthetics, and express their fandom in a highly customizable way.
-Built using Flutter (Dart), K-Verse delivers a smooth interface, flexible UI editing tools, and a responsive design experience.
+K-Hub is a mobile application designed for Kpop fans who want to fully personalize their device with custom wallpapers, widgets, and visual themes inspired by their favorite idols and groups. The app provides a creative environment where users can design unique layouts, organize their screen aesthetics, and express their fandom in a highly customizable way.
+Built using Flutter (Dart), K-Hub delivers a smooth interface, flexible UI editing tools, and a responsive design experience.
 This project is currently developed exclusively for Android users.
 
 🎨 Wallpaper Creator
@@ -25,7 +25,7 @@ This project is currently developed exclusively for Android users.
 
 📌 Platform Support
 
-K-Verse is currently optimized and built solely for Android due to platform-specific widget handling and initial development focus
+K-Hub is currently optimized and built solely for Android due to platform-specific widget handling and initial development focus
 
 📄 Project Goals
 
@@ -36,5 +36,5 @@ K-Verse is currently optimized and built solely for Android due to platform-spec
 
 📬 Feedback & Contact
 
-K-Verse uses a structured feedback system to evaluate usability and user experience during development.
+K-Hub uses a structured feedback system to evaluate usability and user experience during development.
 For any inquiries or feedback please email me : 📧 kentcwk26@gmail.com

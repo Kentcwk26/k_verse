@@ -144,7 +144,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 
                     _buildSectionHeader(LocaleKeys.about.tr()),
                     _buildSettingItem(
-                      'About K-Verse'.tr(),
+                      'About K-Hub'.tr(),
                       Icons.info,
                       onTap: () {
                         Navigator.push(
@@ -274,7 +274,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text('${LocaleKeys.shareApp.tr()} K-Verse'),
+        title: Text('${LocaleKeys.shareApp.tr()} K-Hub'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,

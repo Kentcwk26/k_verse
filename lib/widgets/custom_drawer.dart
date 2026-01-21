@@ -8,7 +8,7 @@ class CustomDrawer extends StatelessWidget {
   final Function(int) onItemSelected;
 
   const CustomDrawer({
-    super.key, 
+    super.key,
     required this.onItemSelected,
   });
 
@@ -47,7 +47,7 @@ class CustomDrawer extends StatelessWidget {
               ],
             ),
           ),
-          
+
           _buildSimpleAuthSection(context, authViewModel),
         ],
       ),
@@ -68,7 +68,7 @@ class CustomDrawer extends StatelessWidget {
 
   Widget _buildSimpleAuthSection(BuildContext context, AuthViewModel authViewModel) {
     final isLoggedIn = authViewModel.currentUser != null;
-    
+
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(16),
@@ -93,7 +93,14 @@ class CustomDrawer extends StatelessWidget {
           : ElevatedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                Navigator.push(context, MaterialPageRoute(builder: (_) => LoginScreen()));
+                Future.delayed(const Duration(milliseconds: 150), () {
+                  if (context.mounted) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => LoginScreen()),
+                    );
+                  }
+                });
               },
               style: ElevatedButton.styleFrom(
                 shape: RoundedRectangleBorder(
@@ -107,30 +114,33 @@ class CustomDrawer extends StatelessWidget {
   }
 
   void _showLogoutDialog(BuildContext context, AuthViewModel authViewModel) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Log Out'),
-        content: Text('Are you sure you want to log out?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: Text('Cancel', style: TextStyle(color: Colors.grey)),
-          ),
-          TextButton(
-            onPressed: () async {
-              Navigator.of(context).pop();
-              try {
-                await authViewModel.signOut();
-                SnackBarHelper.showSuccess(context, 'Logged out successfully');
-              } catch (e) {
-                SnackBarHelper.showError(context, 'Error logging out: $e');
-              }
-            },
-            child: Text('Log Out', style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    );
+    Future.delayed(Duration.zero, () {
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('Log Out'),
+          content: Text('Are you sure you want to log out?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('Cancel', style: TextStyle(color: Colors.grey)),
+            ),
+            TextButton(
+              onPressed: () async {
+                Navigator.of(context).pop();
+                try {
+                  await authViewModel.signOut();
+                  SnackBarHelper.showSuccess(context, 'Logged out successfully');
+                } catch (e) {
+                  SnackBarHelper.showError(context, 'Error logging out: $e');
+                }
+              },
+              child: Text('Log Out', style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        ),
+      );
+    });
   }
 }

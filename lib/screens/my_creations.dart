@@ -138,6 +138,7 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
     await channel.invokeMethod('updateWidget', {
       'widgetId': widgetId,
       'image': path,
+      'text': wallpaper.title,
       'wallpaperId': wallpaper.id,
     });
 

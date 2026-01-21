@@ -45,8 +45,8 @@ class UserHomeClockWidgetProvider : AppWidgetProvider() {
 
             // Load saved background
             val prefs = HomeWidgetPlugin.getData(context)
-            val bgColor = prefs.getString("bgColor", "#303030")!!
-            val imageUrl = prefs.getString("imageUrl", null)
+            val bgColor = prefs.getString("bgColor_$widgetId", "#303030")!!
+            val imageUrl = prefs.getString("image_$widgetId", null)
 
             try {
                 views.setInt(R.id.clock_widget_root, "setBackgroundColor", Color.parseColor(bgColor))
@@ -86,10 +86,8 @@ class UserHomeClockWidgetProvider : AppWidgetProvider() {
         ) {
 
             val prefs = HomeWidgetPlugin.getData(context)
-
-            val bgColor = prefs.getString("bgColor", "#303030")!!
-            val imageUrl = prefs.getString("imageUrl", null)
-
+            val bgColor = prefs.getString("bgColor_$widgetId", "#303030")!!
+            val imageUrl = prefs.getString("image_$widgetId", null)
             val views = RemoteViews(context.packageName, R.layout.user_clock_widget_layout)
 
             // Background

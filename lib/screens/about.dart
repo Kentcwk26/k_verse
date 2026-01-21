@@ -54,20 +54,20 @@ class _AboutScreenState extends State<AboutScreen> {
               duration: const Duration(seconds: 3),
               curve: Curves.easeInOut,
               child: Text(
-                "Welcome to K-Verse — the ultimate playground for K-pop stans! "
-                "With K-Verse, you can customize your wallpapers, create personalized widgets, "
+                "Welcome to K-Hub — the ultimate playground for K-pop stans! "
+                "With K-Hub, you can customize your wallpapers, create personalized widgets, "
                 "and express your love for your favorite idols in a unique way.\n\n"
                 "Our app is built for fans who want to bring their passion for K-pop into their everyday digital space. "
                 "Whether you want a stunning home screen wallpaper, a countdown widget for comebacks, "
-                "or a personalized widget showing your favorite group, K-Verse has you covered.\n\n"
+                "or a personalized widget showing your favorite group, K-Hub has you covered.\n\n"
                 "Features include:\n\n"
                 "• Wallpaper Customization — Mix images, text, and colors to design your perfect Kpop wallpaper.\n"
                 "• Widget Creator — Build custom widgets for your home screen featuring countdowns, images, or quotes.\n"
                 "• Fan Packs & Stickers — Add themed packs for your favorite groups to make your designs even more special.\n"
                 "• Easy Sharing & Saving — Export your creations to use on your device or share with friends.\n\n"
-                "K-Verse is your personal K-pop studio, letting you bring your bias directly to your phone screen. "
+                "K-Hub is your personal K-pop studio, letting you bring your bias directly to your phone screen. "
                 "Express your fandom, personalize your device, and show off your creativity!\n\n"
-                "Stay inspired, stay creative, and let K-Verse turn your love for K-pop into art right on your screen.",
+                "Stay inspired, stay creative, and let K-Hub turn your love for K-pop into art right on your screen.",
                 textAlign: TextAlign.justify,
                 style: const TextStyle(fontSize: 16, height: 1.4),
               ),
@@ -174,8 +174,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             Text(
-              "${'Last Updated'.tr()}: ${DateFormatter.fullDateTime(DateTime.now())}\n\n"
-              "K-Verse (\"we,\" \"our,\" or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our K-Verse mobile application.\n\n"
+              "K-Hub (\"we,\" \"our,\" or \"us\") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and safeguard your information when you use our K-Hub mobile application.\n\n"
               "1. Information We Collect\n\n"
               "• Personal Information: When you create an account, we may collect your name, email address, and profile picture.\n"
               "• Content You Create: We store the wallpapers, widgets, and designs you create within the app.\n"
@@ -209,6 +208,7 @@ class PrivacyPolicyScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16, height: 1.4),
             ),
             const SizedBox(height: 30),
+            Text("${'Last Updated'.tr()}: 15/12/2025", style: TextStyle(fontWeight: FontWeight.bold))
           ],
         ),
       ),
@@ -230,8 +230,7 @@ class TermsOfServiceScreen extends StatelessWidget {
           children: [
             const SizedBox(height: 20),
             Text(
-              "${'Last Updated'.tr()}: ${DateFormatter.fullDateTime(DateTime.now())}\n\n"
-              "Please read these Terms of Service (\"Terms\") carefully before using the K-Verse mobile application (the \"Service\") operated by K-Verse (\"us,\" \"we,\" or \"our\").\n\n"
+              "Please read these Terms of Service (\"Terms\") carefully before using the K-Hub mobile application (the \"Service\") operated by K-Hub (\"us,\" \"we,\" or \"our\").\n\n"
               "1. Acceptance of Terms\n\n"
               "By accessing or using our Service, you agree to be bound by these Terms. If you disagree with any part of the terms, you may not access the Service.\n\n"
               "2. User Accounts\n\n"
@@ -240,7 +239,7 @@ class TermsOfServiceScreen extends StatelessWidget {
               "• You must not share your account credentials with others\n"
               "• You are responsible for all activities that occur under your account\n\n"
               "3. User Content\n\n"
-              "• You retain all rights to the content you create within K-Verse\n"
+              "• You retain all rights to the content you create within K-Hub\n"
               "• By uploading content, you grant us a license to store and display that content within our Service\n"
               "• You are solely responsible for the content you create and share\n"
               "• You must not upload content that infringes on copyrights or intellectual property rights\n\n"
@@ -252,19 +251,20 @@ class TermsOfServiceScreen extends StatelessWidget {
               "• To upload or transmit viruses or any malicious code\n"
               "• To spam, phish, or engage in other unethical activities\n\n"
               "5. Intellectual Property\n\n"
-              "• The K-Verse app, its original content, features, and functionality are owned by K-Verse and are protected by international copyright and intellectual property laws\n"
+              "• The K-Hub app, its original content, features, and functionality are owned by K-Hub and are protected by international copyright and intellectual property laws\n"
               "• K-pop group names, logos, and official content are property of their respective companies\n"
               "• You may not reproduce, duplicate, copy, or resell any part of our Service without express written permission\n\n"
               "6. Termination\n\n"
               "We may terminate or suspend your account immediately, without prior notice, for conduct that we believe violates these Terms or is harmful to other users, us, or third parties, or for any other reason.\n\n"
               "7. Limitation of Liability\n\n"
-              "In no event shall K-Verse, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.\n\n"
+              "In no event shall K-Hub, nor its directors, employees, partners, agents, suppliers, or affiliates, be liable for any indirect, incidental, special, consequential or punitive damages, including without limitation, loss of profits, data, use, goodwill, or other intangible losses.\n\n"
               "8. Changes to Terms\n\n"
               "We reserve the right, at our sole discretion, to modify or replace these Terms at any time. We will provide notice of any changes by posting the new Terms on this page.\n\n".tr(),
               textAlign: TextAlign.justify,
               style: const TextStyle(fontSize: 16, height: 1.4),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 20),
+            Text("${'Last Updated'.tr()}: 15/12/2025", style: TextStyle(fontWeight: FontWeight.bold))
           ],
         ),
       ),
@@ -277,8 +277,8 @@ class ContactScreen extends StatelessWidget {
 
   Future<void> _launchEmail(BuildContext context) async {
     const email = 'kentcwk26@gmail.com';
-    const subject = 'K-Verse App Support';
-    const body = 'Hello K-Verse Team,\n\nI would like to contact you about:';
+    const subject = 'K-Hub App Support';
+    const body = 'Hello K-Hub Team,\n\nI would like to contact you about:';
     
     final Uri emailLaunchUri = Uri(
       scheme: 'mailto',
@@ -396,7 +396,7 @@ class ContactScreen extends StatelessWidget {
             
             const SizedBox(height: 30),
             Text(
-              "We typically respond within 24-48 hours. \nThank you for using K-Verse! 💖".tr(),
+              "We typically respond within 24-48 hours. \nThank you for using K-Hub! 💖".tr(),
               textAlign: TextAlign.center,
               style: const TextStyle(fontSize: 14, fontStyle: FontStyle.italic),
             ),
@@ -455,7 +455,7 @@ class FAQScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Center(
               child: Text(
-                "Find quick answers to common questions about K-Verse".tr(),
+                "Find quick answers to common questions about K-Hub".tr(),
                 textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 14),
               ),
@@ -474,12 +474,12 @@ class FAQScreen extends StatelessWidget {
               answer: "Tap the 'Create' button on the home screen, then:\n\n1. Choose a background image from your gallery or our K-pop collections\n2. Add text, stickers, or effects\n3. Customize the layout and colors\n4. Save to your device or set as wallpaper".tr(),
             ),
             _buildFAQItem(
-              question: "Is K-Verse free to use?".tr(),
-              answer: "Yes! K-Verse is completely free to download and use. We offer basic wallpaper and widget creation features at no cost. Some premium sticker packs and advanced features may be available as in-app purchases in the future.".tr(),
+              question: "Is K-Hub free to use?".tr(),
+              answer: "Yes! K-Hub is completely free to download and use. We offer basic wallpaper and widget creation features at no cost. Some premium sticker packs and advanced features may be available as in-app purchases in the future.".tr(),
             ),
             _buildFAQItem(
               question: "How do I set a widget on my home screen?".tr(),
-              answer: "After creating a widget:\n\n1. Long-press on your home screen\n2. Select 'Widgets' from the menu\n3. Find K-Verse in the widget list\n4. Choose your created widget and place it on your home screen\n\nNote: Widget setup may vary slightly depending on your device and Android version.".tr(),
+              answer: "After creating a widget:\n\n1. Long-press on your home screen\n2. Select 'Widgets' from the menu\n3. Find K-Hub in the widget list\n4. Choose your created widget and place it on your home screen\n\nNote: Widget setup may vary slightly depending on your device and Android version.".tr(),
             ),
 
             const SizedBox(height: 30),
@@ -493,7 +493,7 @@ class FAQScreen extends StatelessWidget {
               answer: "Go to Settings > Account > Reset Password. You'll receive an email with a password reset link. Make sure to check your spam folder if you don't see it in your inbox.".tr(),
             ),
             _buildFAQItem(
-              question: "Can I use K-Verse on multiple devices?".tr(),
+              question: "Can I use K-Hub on multiple devices?".tr(),
               answer: "Yes! Your account syncs across all your devices. Simply log in with the same account on any device, and your creations, preferences, and sticker packs will be available.".tr(),
             ),
             _buildFAQItem(
@@ -528,7 +528,7 @@ class FAQScreen extends StatelessWidget {
             const SizedBox(height: 15),
             _buildFAQItem(
               question: "Why are my widgets not updating?".tr(),
-              answer: "If widgets aren't updating:\n\n• Check your device's battery optimization settings and exclude K-Verse\n• Ensure you have a stable internet connection\n• Try removing and re-adding the widget\n• Restart the app and your device\n\nIf issues persist, contact our support team.".tr(),
+              answer: "If widgets aren't updating:\n\n• Check your device's battery optimization settings and exclude K-Hub\n• Ensure you have a stable internet connection\n• Try removing and re-adding the widget\n• Restart the app and your device\n\nIf issues persist, contact our support team.".tr(),
             ),
             _buildFAQItem(
               question: "The app is crashing, what should I do?".tr(),
@@ -536,7 +536,7 @@ class FAQScreen extends StatelessWidget {
             ),
             _buildFAQItem(
               question: "Why can't I save my creations?".tr(),
-              answer: "Saving issues are usually related to:\n\n• Storage permissions - make sure K-Verse has permission to access your storage\n• Low device storage - check if you have enough space\n• Network issues - cloud saves require internet connection\n\nCheck these settings and try again.".tr(),
+              answer: "Saving issues are usually related to:\n\n• Storage permissions - make sure K-Hub has permission to access your storage\n• Low device storage - check if you have enough space\n• Network issues - cloud saves require internet connection\n\nCheck these settings and try again.".tr(),
             ),
 
             const SizedBox(height: 30),
@@ -547,15 +547,15 @@ class FAQScreen extends StatelessWidget {
             const SizedBox(height: 15),
             _buildFAQItem(
               question: "Can I use official group logos in my creations?".tr(),
-              answer: "Yes, for personal use! K-Verse is designed for fans to express their love for K-pop. However, you cannot use created content for commercial purposes or claim official logos as your own work.".tr(),
+              answer: "Yes, for personal use! K-Hub is designed for fans to express their love for K-pop. However, you cannot use created content for commercial purposes or claim official logos as your own work.".tr(),
             ),
             _buildFAQItem(
               question: "Are there any restrictions on which groups I can feature?".tr(),
-              answer: "No restrictions! K-Verse supports all K-pop groups. We have content for popular groups like BTS, BLACKPINK, TWICE, Stray Kids, and many more. You can request specific groups through our feature request form.".tr(),
+              answer: "No restrictions! K-Hub supports all K-pop groups. We have content for popular groups like BTS, BLACKPINK, TWICE, Stray Kids, and many more. You can request specific groups through our feature request form.".tr(),
             ),
             _buildFAQItem(
-              question: "Can I sell creations I make with K-Verse?".tr(),
-              answer: "No. All creations made with K-Verse are for personal, non-commercial use only. You cannot sell, distribute, or use K-Verse creations for commercial purposes due to copyright restrictions on K-pop content.".tr(),
+              question: "Can I sell creations I make with K-Hub?".tr(),
+              answer: "No. All creations made with K-Hub are for personal, non-commercial use only. You cannot sell, distribute, or use K-Hub creations for commercial purposes due to copyright restrictions on K-pop content.".tr(),
             ),
 
             const SizedBox(height: 20),

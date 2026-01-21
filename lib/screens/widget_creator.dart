@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:async';
 import 'package:easy_localization/easy_localization.dart';
+import 'package:flutter/services.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,6 +12,8 @@ import '../utils/date_formatter.dart';
 import '../viewmodels/user_viewmodel.dart';
 import '../widgets/color_picker.dart';
 
+enum WidgetCreationStep { name, content, style, generate }
+
 class WidgetCreator extends StatefulWidget {
   const WidgetCreator({super.key});
 
@@ -19,26 +22,33 @@ class WidgetCreator extends StatefulWidget {
 }
 
 class _WidgetCreatorState extends State<WidgetCreator> {
+  WidgetCreationStep _currentStep = WidgetCreationStep.name;
   final FirebaseService _firebaseService = FirebaseService();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _quoteController = TextEditingController();
   final TextEditingController _countdownDateController = TextEditingController();
 
   String? _currentUserId;
-  String _selectedType = 'clock';
+  String? _selectedType;
   String? _uploadedImagePath;
   Timer? _timer;
   DateTime _now = DateTime.now();
+
+  bool get hasType => _selectedType != null;
+  bool get hasName => _nameController.text.trim().isNotEmpty;
+  bool get hasQuote =>_selectedType != 'quote' || _quoteController.text.trim().isNotEmpty;
+
+  bool get canProceedToContent => hasType;
+  bool get canProceedToStyle => hasType && hasName && hasQuote;
+  bool get canGenerate => hasType && hasName && hasQuote;
+
 
   @override
   void initState() {
     super.initState();
     _getCurrentUser();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) {
-      setState(() {
-        _now = DateTime.now();
-      });
-    });
+    _startTimerIfNeeded();
+
   }
 
   @override
@@ -51,32 +61,48 @@ class _WidgetCreatorState extends State<WidgetCreator> {
     'backgroundColor': '#FF69B4',
     'textColor': '#FFFFFF',
     'backgroundImage': null,
-    'fontSize': 16.0, // fixed at 16
+    'fontSize': 16.0
   };
 
   Map<String, dynamic> _data = {};
 
   final List<Map<String, dynamic>> _widgetTypes = [
-    {'type': 'clock', 'name': 'Digital Clock', 'icon': Icons.access_time},
     {
-      'type': 'calendar',
-      'name': 'Event Calendar',
-      'icon': Icons.calendar_today,
+      'type': 'clock', 
+      'name': 'Digital Clock', 
+      'icon': Icons.access_time
     },
     {
       'type': 'quote',
       'name': 'Inspirational Quote',
       'icon': Icons.format_quote,
     },
-    {'type': 'countdown', 'name': 'Countdown', 'icon': Icons.hourglass_bottom},
   ];
+
+  void _completeStep(WidgetCreationStep step) {
+    if (_currentStep.index < step.index) {
+      HapticFeedback.mediumImpact();
+      setState(() {
+        _currentStep = step;
+      });
+    }
+  }
+
+  void _startTimerIfNeeded() {
+    _timer?.cancel();
+    if (_selectedType == 'clock') {
+      _timer = Timer.periodic(
+        const Duration(seconds: 1),
+        (_) => setState(() => _now = DateTime.now()),
+      );
+    }
+  }
 
   void _getCurrentUser() async {
     final vm = Provider.of<UserViewModel>(context, listen: false);
     final user = await vm.getCurrentUser();
-    if (user != null) {
-      setState(() => _currentUserId = user.userId);
-    }
+    if (!mounted) return;
+    setState(() => _currentUserId = user!.userId);
   }
 
   Future<void> _pickColor({
@@ -117,20 +143,17 @@ class _WidgetCreatorState extends State<WidgetCreator> {
 
   Future<void> _saveWidget() async {
     if (_nameController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Please enter widget name')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter widget name')));
       return;
     }
 
     if (_selectedType == "quote" && _quoteController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Enter quote text')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter quote text')));
       return;
     }
 
     if (_selectedType == "countdown" && _countdownDateController.text.isEmpty) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Enter countdown date')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Enter countdown date')));
       return;
     }
 
@@ -143,7 +166,7 @@ class _WidgetCreatorState extends State<WidgetCreator> {
       id: DateTime.now().millisecondsSinceEpoch.toString(),
       userId: _currentUserId!,
       name: _nameController.text,
-      type: _selectedType,
+      type: _selectedType!,
       style: _style,
       data: _data,
       createdAt: DateTime.now(),
@@ -177,12 +200,11 @@ class _WidgetCreatorState extends State<WidgetCreator> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         const Text(
-          "Style",
+          "3️⃣ Style",
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 12),
 
-        // Background Color
         ListTile(
           title: const Text("Background Color"),
           trailing: CircleAvatar(
@@ -200,7 +222,6 @@ class _WidgetCreatorState extends State<WidgetCreator> {
           },
         ),
 
-        // Text Color
         ListTile(
           title: const Text("Text Color"),
           trailing: CircleAvatar(
@@ -218,7 +239,6 @@ class _WidgetCreatorState extends State<WidgetCreator> {
           },
         ),
 
-        // Background Image
         ListTile(
           title: const Text("Background Image"),
           trailing: const Icon(Icons.upload),
@@ -243,7 +263,6 @@ class _WidgetCreatorState extends State<WidgetCreator> {
       ),
       child: Row(
         children: [
-          // LEFT SIDE: IMAGE BOX
           Container(
             width: 80,
             height: 80,
@@ -264,7 +283,6 @@ class _WidgetCreatorState extends State<WidgetCreator> {
 
           const SizedBox(width: 16),
 
-          // RIGHT SIDE: TEXT CONTENT
           Expanded(child: _buildRightTextContent()),
         ],
       ),
@@ -322,7 +340,6 @@ class _WidgetCreatorState extends State<WidgetCreator> {
     }
   }
 
-
   Widget _buildTypeFields() {
     switch (_selectedType) {
       case 'quote':
@@ -332,17 +349,12 @@ class _WidgetCreatorState extends State<WidgetCreator> {
             labelText: "Quote Text",
             border: OutlineInputBorder(),
           ),
-          onChanged: (_) => setState(() {}),
-        );
-
-      case 'countdown':
-        return TextField(
-          controller: _countdownDateController,
-          decoration: const InputDecoration(
-            labelText: "Countdown Date (YYYY-MM-DD)",
-            border: OutlineInputBorder(),
-          ),
-          onChanged: (_) => setState(() {}),
+          onChanged: (_) {
+            setState(() {});
+            if (hasQuote) {
+              _completeStep(WidgetCreationStep.generate);
+            }
+          },
         );
 
       default:
@@ -353,50 +365,94 @@ class _WidgetCreatorState extends State<WidgetCreator> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Create Widget"),
-        actions: [
-          IconButton(icon: const Icon(Icons.check), onPressed: _saveWidget),
-        ],
-      ),
+      appBar: AppBar(title: const Text("Create Widget")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            const Text(
+              "1️⃣ Widget Content",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            DropdownButtonFormField<String>(
+              value: _selectedType,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+              ),
+              hint: const Text(
+                "Please select the widget that you wanna create",
+              ),
+              items: _widgetTypes.map((w) {
+                return DropdownMenuItem<String>(
+                  value: w['type'],
+                  child: Row(
+                    children: [
+                      Icon(w['icon'], size: 18),
+                      const SizedBox(width: 8),
+                      Text(w['name']),
+                    ],
+                  ),
+                );
+              }).toList(),
+              onChanged: (value) {
+                setState(() {
+                  _selectedType = value;
+                  _quoteController.clear();
+                  _countdownDateController.clear();
+                  _startTimerIfNeeded();
+                });
+              },
+            ),
+
+            const SizedBox(height: 24),
+
+            const Text(
+              "2️⃣ Widget Name",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
             TextField(
               controller: _nameController,
               decoration: const InputDecoration(
                 labelText: "Widget Name",
                 border: OutlineInputBorder(),
               ),
-            ),
-            const SizedBox(height: 20),
-
-            const Text(
-              "Widget Type",
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            Wrap(
-              spacing: 10,
-              children: _widgetTypes.map((w) {
-                return ChoiceChip(
-                  avatar: Icon(w['icon']),
-                  label: Text(w['name']),
-                  selected: _selectedType == w['type'],
-                  onSelected: (_) => setState(() => _selectedType = w['type']),
-                );
-              }).toList(),
+              onChanged: (_) {
+                setState(() {});
+                if (hasName) {
+                  _completeStep(WidgetCreationStep.content);
+                }
+              },
             ),
 
-            const SizedBox(height: 20),
+            if (canProceedToContent) ...[
+              const SizedBox(height: 20),
+              _buildTypeFields(),
+            ],
 
-            _buildTypeFields(),
-            _buildPreview(),
-            _buildStyleControls(),
+            if (canProceedToStyle) ...[
+              _buildPreview(),
+              const SizedBox(height: 20),
+              _buildStyleControls(),
+            ],
 
-            const SizedBox(height: 30),
-          ],
+            if (canGenerate) ...[
+              const SizedBox(height: 30),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  icon: const Icon(Icons.auto_awesome),
+                  label: const Text("Generate Widget"),
+                  onPressed: () {
+                    HapticFeedback.heavyImpact();
+                    _saveWidget();
+                  },
+                ),
+              ),
+            ],
+          ]
         ),
       ),
     );
@@ -417,7 +473,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
 
   late TextEditingController _nameController;
   late TextEditingController _quoteController;
-  late TextEditingController _countdownController;
 
   late Map<String, dynamic> _style;
   late Map<String, dynamic> _data;
@@ -431,7 +486,9 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
   void initState() {
     super.initState();
 
-    _selectedType = widget.widget.type;
+    _selectedType = widget.widget.type == 'quote'
+      ? 'quote'
+      : 'clock';
 
     _style = Map<String, dynamic>.from(widget.widget.style);
     _data = Map<String, dynamic>.from(widget.widget.data);
@@ -440,7 +497,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
 
     _nameController = TextEditingController(text: widget.widget.name);
     _quoteController = TextEditingController(text: _data['text'] ?? "");
-    _countdownController = TextEditingController(text: _data['countdownDate'] ?? "");
 
     if (_selectedType == "clock") {
       _timer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -476,7 +532,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
   Future<void> _saveChanges() async {
     _data = {
       'text': _quoteController.text,
-      'countdownDate': _countdownController.text,
     };
 
     final updated = widget.widget.copyWith(
@@ -553,12 +608,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
         return Text(DateFormat('hh:mm:ss a').format(_now), style: TextStyle(fontSize: 16, color: color, fontWeight: FontWeight.bold));
       case 'quote':
         return Text(_quoteController.text.isNotEmpty ? _quoteController.text : "Your Quote...", style: TextStyle(color: color, fontSize: 16));
-      case 'countdown':
-        return Text(
-            _countdownController.text.isEmpty
-                ? "Countdown Date"
-                : "Countdown to ${_countdownController.text}",
-            style: TextStyle(color: color, fontSize: 16));
       case 'calendar':
         return Text(DateFormatter.shortDate(_now),
             style: TextStyle(color: color, fontSize: 16));
@@ -573,12 +622,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
         return TextField(
           controller: _quoteController,
           decoration: const InputDecoration(labelText: "Quote Text"),
-          onChanged: (_) => setState(() {}),
-        );
-      case 'countdown':
-        return TextField(
-          controller: _countdownController,
-          decoration: const InputDecoration(labelText: "Countdown Date (YYYY-MM-DD)"),
           onChanged: (_) => setState(() {}),
         );
       default:
@@ -610,7 +653,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
             _buildPreview(),
             const SizedBox(height: 20),
 
-            // Background color picker
             ListTile(
               title: const Text("Background Color"),
               trailing: CircleAvatar(
@@ -632,7 +674,6 @@ class _EditWidgetScreenState extends State<EditWidgetScreen> {
               ),
             ),
 
-            // Text color picker
             ListTile(
               title: const Text("Text Color"),
               trailing: CircleAvatar(

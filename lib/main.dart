@@ -51,9 +51,7 @@ void main() async {
 
   await EasyLocalization.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-
   await NotificationService.initialize();
-
   await _setupFCM();
 
   runApp(
@@ -98,9 +96,7 @@ Future<void> _setupFCM() async {
       print("🟢 FOREGROUND MESSAGE RECEIVED");
       print("🟢 Message ID: ${message.messageId}");
       print("🟢 Data: ${message.data}");
-      print(
-        "🟢 Notification: ${message.notification?.title} - ${message.notification?.body}",
-      );
+      print("🟢 Notification: ${message.notification?.title} - ${message.notification?.body}");
 
       await _showNotificationFromMessage(message);
     });
@@ -123,7 +119,6 @@ Future<void> _setupFCM() async {
 
     messaging.onTokenRefresh.listen((newToken) {
       print("🔄 TOKEN REFRESHED: $newToken");
-
       _sendTokenToServer(newToken);
     });
 
@@ -179,7 +174,7 @@ class MyApp extends ConsumerWidget {
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'K-Verse',
+        title: 'K-Hub',
         theme: _buildTheme(themeState),
         localizationsDelegates: context.localizationDelegates,
         supportedLocales: context.supportedLocales,

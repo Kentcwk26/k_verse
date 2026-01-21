@@ -1,5 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.k_verse">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.example.k_verse">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -27,10 +26,9 @@
 
     <application
         android:name="${applicationName}"
-        android:label="k_verse"
+        android:label="K-Hub"
         android:icon="@mipmap/ic_launcher">
 
-        <!-- Main Flutter Activity -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -73,16 +71,14 @@
             </intent-filter>
         </activity>
 
-        <!-- Foreground service for 1-second clock updates -->
         <service
             android:name=".ClockUpdateService"
             android:foregroundServiceType="dataSync"
             android:exported="false" />
 
-        <!-- Wallpaper widget -->
         <receiver
             android:name=".KVerseWidgetProvider"
-            android:label="K-Verse Wallpaper"
+            android:label="K-Hub Wallpaper"
             android:exported="true">
 
             <intent-filter>
@@ -97,7 +93,7 @@
 
         <receiver
             android:name=".UserHomeClockWidgetProvider"
-            android:label="K-Verse Clock Widget"
+            android:label="K-Hub Clock Widget"
             android:exported="true">
 
             <intent-filter>
@@ -112,7 +108,7 @@
 
         <receiver
             android:name=".UserHomeQuoteWidgetProvider"
-            android:label="K-Verse Quote Widget"
+            android:label="K-Hub Quote Widget"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />

@@ -10,8 +10,7 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen>
-    with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
   late AnimationController _fadeController;
   late AnimationController _dotController;
   late Animation<double> _fadeAnimation;
@@ -94,13 +93,11 @@ class _SplashScreenState extends State<SplashScreen>
 
       if (!mounted) return;
 
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (_, __, ___) => targetPage,
-          transitionsBuilder: (_, animation, __, child) => FadeTransition(opacity: animation, child: child),
-          transitionDuration: const Duration(milliseconds: 800),
-        ),
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (_) => targetPage),
+        (route) => false,
       );
+
     } catch (e) {
       if (!mounted) return;
 
@@ -109,7 +106,10 @@ class _SplashScreenState extends State<SplashScreen>
         _loadingText = "splash.error_loading".tr();
       });
 
-      await _showErrorDialog(e.toString());
+      Future.delayed(Duration.zero, () {
+        if (mounted) _showErrorDialog(e.toString());
+      });
+
     }
   }
 
@@ -221,7 +221,7 @@ class _SplashScreenState extends State<SplashScreen>
                   ),
                 ),
 
-                if (!_isLoading && _loadingText == "splash.error_loading".tr()) ...[
+                if (!_isLoading && _loadingText == tr("splash.error_loading")) ...[
                   const SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: _retryLoading,

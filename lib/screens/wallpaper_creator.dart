@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
@@ -87,7 +88,7 @@ class _WallpaperCreatorState extends State<WallpaperCreator> {
       final wallpaper = KWallpaper(
         id: DateTime.now().millisecondsSinceEpoch.toString(),
         userId: _currentUserId!,
-        title: "My K-Verse Wallpaper",
+        title: "My K-Hub Wallpaper",
         backgroundImage: _backgroundImage!,
         elements: _elements,
         createdAt: DateTime.now(),
@@ -140,80 +141,67 @@ class _WallpaperCreatorState extends State<WallpaperCreator> {
                       padding: const EdgeInsets.all(16),
                       child: RepaintBoundary(
                         key: _previewKey,
-                        child: AspectRatio(
-                          aspectRatio: 1,
-                          child: GestureDetector(
-                            onTap: _backgroundImage == null
-                                ? _pickBackgroundImage
-                                : null,
-                            child: Stack(
-                              children: [
-                                Container(
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(12),
-                                    color: Colors.grey[200],
-                                  ),
-                                  child: _backgroundImage == null
-                                      ? Center(
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: const [
-                                              Icon(
-                                                Icons.add_photo_alternate,
-                                                size: 64,
-                                                color: Colors.grey,
-                                              ),
-                                              SizedBox(height: 12),
-                                              Text("Tap to add background"),
-                                            ],
-                                          ),
-                                        )
-                                      : ClipRRect(
-                                          borderRadius:
-                                              BorderRadius.circular(12),
-                                          child: CachedNetworkImage(
-                                            imageUrl: _backgroundImage!,
-                                            fit: BoxFit.cover,
-                                            placeholder: (_, __) =>
-                                                const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
-                                            ),
-                                          ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: MediaQuery.of(context).size.width - 32, // square
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: GestureDetector(
+                              onTap: _backgroundImage == null ? _pickBackgroundImage : null,
+                              child: Stack(
+                                fit: StackFit.expand,
+                                children: [
+                                  Container(color: Colors.grey[200]),
+                                  if (_backgroundImage != null)
+                                    Positioned.fill(
+                                      child: CachedNetworkImage(
+                                        imageUrl: _backgroundImage!,
+                                        fit: BoxFit.cover,
+                                        placeholder: (_, __) => const Center(
+                                          child: CircularProgressIndicator(),
                                         ),
-                                ),
-                                if (_backgroundImage != null)
-                                  Positioned(
-                                    top: 10,
-                                    right: 10,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.black54,
-                                        borderRadius:
-                                            BorderRadius.circular(20),
+                                        errorWidget: (_, __, ___) => const Center(
+                                          child: Icon(Icons.broken_image, size: 48),
+                                        ),
                                       ),
-                                      child: Row(
+                                    ),
+                                  if (_backgroundImage == null)
+                                    Center(
+                                      child: Column(
+                                        mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.clear,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: _clearBackground,
-                                          ),
-                                          IconButton(
-                                            icon: const Icon(
-                                              Icons.edit,
-                                              color: Colors.white,
-                                            ),
-                                            onPressed: _pickBackgroundImage,
-                                          ),
+                                          Icon(Icons.add_photo_alternate, size: 64, color: Colors.grey),
+                                          SizedBox(height: 12),
+                                          Text("Tap to add background").tr(),
                                         ],
                                       ),
                                     ),
-                                  ),
-                              ],
+                                  if (_backgroundImage != null)
+                                    Positioned(
+                                      top: 10,
+                                      right: 10,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.black54,
+                                          borderRadius: BorderRadius.circular(20),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.clear, color: Colors.white),
+                                              onPressed: _clearBackground,
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.edit, color: Colors.white),
+                                              onPressed: _pickBackgroundImage,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
                           ),
                         ),
@@ -270,7 +258,6 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
     setState(() => _loading = false);
   }
 
-  /// SAFE download for Android widgets
   Future<String?> _downloadImage(String url) async {
     try {
       final request = await HttpClient().getUrl(Uri.parse(url));
@@ -311,9 +298,8 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
               leading: const Icon(Icons.widgets),
               title: const Text("Export for Widget"),
               onTap: () async {
-                Navigator.pop(context); // Close sheet
+                Navigator.pop(context); 
 
-                // 1️⃣ Get widget IDs
                 final widgetIds = await getWidgetIds();
 
                 if (widgetIds.isEmpty) {
@@ -321,17 +307,14 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                   return;
                 }
 
-                // 2️⃣ Always use newest widget
                 final widgetId = widgetIds.reduce((a, b) => a > b ? a : b);
 
-                // 3️⃣ Download image
                 final path = await _downloadImage(w.backgroundImage);
                 if (path == null) {
                   SnackBarHelper.showError(context, "Image error");
                   return;
                 }
 
-                // 4️⃣ Native update
                 const channel = MethodChannel("kverse/widget");
                 await channel.invokeMethod("updateWidget", {
                   "widgetId": widgetId,
@@ -340,10 +323,8 @@ class _MyCollectionScreenState extends State<MyCollectionScreen> {
                   "wallpaperId": w.id,
                 });
 
-                // 5️⃣ SUCCESS SNACKBAR (works now!)
                 if (!mounted) return;
-                final rootContext = Navigator.of(context).overlay!.context;
-                SnackBarHelper.showSuccess(rootContext, "Widget updated!");
+                SnackBarHelper.showSuccess(context, "Widget updated!");
               },
             ),
             ListTile(
