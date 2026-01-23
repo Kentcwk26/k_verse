@@ -1,36 +1,31 @@
 package com.example.k_verse
 
-import android.content.ComponentName
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import java.net.URL
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.view.View
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetPlugin
+import java.net.URL
 
 class UserHomeClockWidgetProvider : AppWidgetProvider() {
 
     override fun onUpdate(context: Context, manager: AppWidgetManager, ids: IntArray) {
         super.onUpdate(context, manager, ids)
-
         ids.forEach { widgetId ->
             updateClockWidget(context, manager, widgetId)
         }
-
-        // Start service only once
         context.startService(Intent(context, ClockUpdateService::class.java))
     }
 
     override fun onReceive(context: Context, intent: Intent) {
         super.onReceive(context, intent)
-
         if (intent.action == "CLOCK_WIDGET_UPDATE") {
-
             val widgetId = intent.getIntExtra("widgetId", -1)
             val time = intent.getStringExtra("time")
             val date = intent.getStringExtra("date")
@@ -38,38 +33,60 @@ class UserHomeClockWidgetProvider : AppWidgetProvider() {
             if (widgetId == -1 || time == null || date == null) return
 
             val views = RemoteViews(context.packageName, R.layout.user_clock_widget_layout)
-
-            // Set date/time
             views.setTextViewText(R.id.clock_date, date)
             views.setTextViewText(R.id.clock_time, time)
 
-            // Load saved background
-            val prefs = HomeWidgetPlugin.getData(context)
-            val bgColor = prefs.getString("bgColor_$widgetId", "#303030")!!
-            val imageUrl = prefs.getString("image_$widgetId", null)
-
-            try {
-                views.setInt(R.id.clock_widget_root, "setBackgroundColor", Color.parseColor(bgColor))
-            } catch (_: Exception) {}
-
-            if (!imageUrl.isNullOrEmpty()) {
-                val bmp = loadImage(imageUrl)
-                if (bmp != null) {
-                    views.setViewVisibility(R.id.clock_bg_image, android.view.View.VISIBLE)
-                    views.setImageViewBitmap(R.id.clock_bg_image, bmp)
-                }
-            } else {
-                views.setViewVisibility(R.id.clock_bg_image, android.view.View.GONE)
-            }
-
+            applyVisuals(context, views, widgetId)
             AppWidgetManager.getInstance(context).updateAppWidget(widgetId, views)
         }
     }
 
     companion object {
+        fun updateClockWidget(context: Context, manager: AppWidgetManager, widgetId: Int) {
+            val views = RemoteViews(context.packageName, R.layout.user_clock_widget_layout)
+            applyVisuals(context, views, widgetId)
 
-        fun loadImage(url: String?): Bitmap? {
-            if (url.isNullOrEmpty()) return null
+            val pendingIntent = PendingIntent.getActivity(
+                context, widgetId, Intent(context, MainActivity::class.java),
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
+            views.setOnClickPendingIntent(R.id.clock_widget_root, pendingIntent)
+            manager.updateAppWidget(widgetId, views)
+        }
+
+        private fun applyVisuals(context: Context, views: RemoteViews, widgetId: Int) {
+            val prefs = HomeWidgetPlugin.getData(context)
+            
+            // 1. Background Color
+            val bgColor = prefs.getString("bgColor_$widgetId", "#303030")!!
+            try {
+                views.setInt(R.id.clock_widget_root, "setBackgroundColor", Color.parseColor(bgColor))
+            } catch (_: Exception) {}
+
+            // 2. Background Image (URL)
+            val bgImageUrl = prefs.getString("image_$widgetId", null)
+            if (!bgImageUrl.isNullOrEmpty()) {
+                val bmp = loadFromUrl(bgImageUrl)
+                bmp?.let {
+                    views.setViewVisibility(R.id.clock_bg_image, View.VISIBLE)
+                    views.setImageViewBitmap(R.id.clock_bg_image, it)
+                }
+            }
+
+            // 3. User Side Image (Now handling as URL)
+            val userImageUrl = prefs.getString("user_image_path_$widgetId", null)
+            if (!userImageUrl.isNullOrEmpty()) {
+                val userBmp = loadFromUrl(userImageUrl) 
+                if (userBmp != null) {
+                    views.setViewVisibility(R.id.clock_bg_image, View.VISIBLE)
+                    views.setImageViewBitmap(R.id.clock_bg_image, userBmp)
+                }
+            } else {
+                views.setViewVisibility(R.id.clock_bg_image, View.GONE)
+            }
+        }
+
+        private fun loadFromUrl(url: String): Bitmap? {
             return try {
                 val conn = URL(url).openConnection()
                 conn.connect()
@@ -77,48 +94,6 @@ class UserHomeClockWidgetProvider : AppWidgetProvider() {
             } catch (e: Exception) {
                 null
             }
-        }
-
-        fun updateClockWidget(
-            context: Context,
-            manager: AppWidgetManager,
-            widgetId: Int
-        ) {
-
-            val prefs = HomeWidgetPlugin.getData(context)
-            val bgColor = prefs.getString("bgColor_$widgetId", "#303030")!!
-            val imageUrl = prefs.getString("image_$widgetId", null)
-            val views = RemoteViews(context.packageName, R.layout.user_clock_widget_layout)
-
-            // Background
-            try {
-                views.setInt(R.id.clock_widget_root, "setBackgroundColor", Color.parseColor(bgColor))
-            } catch (_: Exception) {}
-
-            // Background image
-            if (!imageUrl.isNullOrEmpty()) {
-                val bmp = loadImage(imageUrl)
-                if (bmp != null) {
-                    views.setViewVisibility(R.id.clock_bg_image, android.view.View.VISIBLE)
-                    views.setImageViewBitmap(R.id.clock_bg_image, bmp)
-                }
-            } else {
-                views.setViewVisibility(R.id.clock_bg_image, android.view.View.GONE)
-            }
-
-            // Placeholder time until service updates
-            views.setTextViewText(R.id.clock_time, "--:--:--")
-
-            // Open app on click
-            val pendingIntent = PendingIntent.getActivity(
-                context,
-                widgetId,
-                Intent(context, MainActivity::class.java),
-                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-            )
-            views.setOnClickPendingIntent(R.id.clock_widget_root, pendingIntent)
-
-            manager.updateAppWidget(widgetId, views)
         }
     }
 }

@@ -75,9 +75,14 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
     await HomeWidget.saveWidgetData("bgColor_$widgetId", widget.style["backgroundColor"]);
     await HomeWidget.saveWidgetData("image_$widgetId", widget.style["backgroundImage"]);
 
-    await HomeWidget.updateWidget(
+    await HomeWidget.updateWidget(name: 'UserHomeClockWidgetProvider');
+
+    HomeWidget.isRequestPinWidgetSupported();
+
+    HomeWidget.requestPinWidget(
       name: 'UserHomeClockWidgetProvider',
-      iOSName: 'UserHomeClockWidgetProvider',
+      androidName: 'UserHomeClockWidgetProvider',
+      qualifiedAndroidName: 'com.example.app.UserHomeClockWidgetProvider',
     );
 
     if (!mounted) return;
@@ -120,30 +125,20 @@ class _MyCreationsState extends State<MyCreations> with SingleTickerProviderStat
   Future<void> sendWallpaperToHomeScreen(KWallpaper wallpaper) async {
     final path = await _downloadImage(wallpaper.backgroundImage);
     if (path == null) {
-      if (!mounted) return;
       SnackBarHelper.showError(context, "Failed to download image");
       return;
     }
 
-    final widgetIds = await getWidgetIds();
-    if (widgetIds.isEmpty) {
-      if (!mounted) return;
-      SnackBarHelper.showError(context, "No widgets found. Add widget first.");
-      return;
-    }
+    await HomeWidget.saveWidgetData('wallpaper_image', path);
+    await HomeWidget.saveWidgetData('wallpaper_text', wallpaper.title);
 
-    final widgetId = widgetIds.last;
-
-    final channel = const MethodChannel('kverse/widget');
-    await channel.invokeMethod('updateWidget', {
-      'widgetId': widgetId,
-      'image': path,
-      'text': wallpaper.title,
-      'wallpaperId': wallpaper.id,
-    });
+    await HomeWidget.updateWidget(
+      name: 'KVerseWallpaperWidget',
+      androidName: 'KVerseWallpaperWidget',
+    );
 
     if (!mounted) return;
-    SnackBarHelper.showSuccess(context, "Wallpaper exported to widget!");
+    SnackBarHelper.showSuccess(context, "Wallpaper exported to Home Screen!");
   }
 
   void _getCurrentUserAndLoadCreations() async {

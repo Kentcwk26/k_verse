@@ -5,7 +5,7 @@
     android:minResizeWidth="110dp"
     android:minResizeHeight="60dp"
     android:updatePeriodMillis="0"
-    android:initialLayout="@layout/kverse_widget"
+    android:initialLayout="@layout/kverse_widget_layout"
     android:widgetCategory="home_screen"
     android:resizeMode="horizontal|vertical"
     android:configure="com.example.k_verse.WidgetConfigActivity" />
